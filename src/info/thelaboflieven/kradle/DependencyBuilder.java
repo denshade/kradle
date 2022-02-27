@@ -29,15 +29,17 @@ public class DependencyBuilder
 
     private static void downloadURL(String urlPath, String filenamePath)
     {
+        File outputFile = new File(filenamePath);
+        System.out.println("Storing URL " + urlPath + " to " + outputFile.getAbsolutePath());
         try (BufferedInputStream in = new BufferedInputStream(new URL(urlPath).openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream(filenamePath)) {
-            byte dataBuffer[] = new byte[1024];
+             FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
+            byte[] dataBuffer = new byte[1024];
             int bytesRead;
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
             }
         } catch (IOException e) {
-            // handle exception
+            System.err.println(e);
         }
     }
 }
