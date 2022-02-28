@@ -17,14 +17,15 @@ public class DependencyBuilder
         } else {
             System.out.println("Found dependencies.txt");
         }
+        readLinesAndDownload(f, 1);
+    }
+
+    public static void readLinesAndDownload(File f, int nrThreads) throws IOException {
         List<String> urls = Files.readAllLines(f.toPath());
-        for (String line : urls)
-        {
+        urls.parallelStream().forEach((line) -> {
             String[] lineParts = line.split(",");
             downloadURL(lineParts[0], lineParts[1]);
-        }
-
-
+        });
     }
 
     private static void downloadURL(String urlPath, String filenamePath)
