@@ -40,8 +40,9 @@ public class JarDependencyFetcher
                 timingInfo.timing = end - start;
                 timingInfo.url = url;
                 timingInfo.filepath = filename;
+                timingInfo.status = "OK";
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                timingInfo.status = e.getMessage();
             }
             timingInfos.add(timingInfo);
         });

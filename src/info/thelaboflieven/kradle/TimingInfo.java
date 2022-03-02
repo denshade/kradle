@@ -8,4 +8,5 @@ public class TimingInfo
     public long timing;
     public URL url;
     public File filepath;
+    public String status;
 }
