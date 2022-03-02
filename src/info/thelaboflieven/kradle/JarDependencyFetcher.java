@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DependencyBuilder
+public class JarDependencyFetcher
 {
     public static void main(String[] args) throws IOException {
         File f = new File("dependencies.txt");
@@ -23,7 +23,10 @@ public class DependencyBuilder
     }
 
     public static void readLinesAndDownload(File f) throws IOException {
-        List<String> urls = Files.readAllLines(f.toPath());
+        readLinesAndDownload(Files.readAllLines(f.toPath()));
+    }
+
+    public static List<TimingInfo> readLinesAndDownload(List<String> urls)  {
         List<TimingInfo> timingInfos = new ArrayList<>();
         urls.parallelStream().forEach((line) -> {
             var timingInfo = new TimingInfo();
@@ -42,6 +45,7 @@ public class DependencyBuilder
             }
             timingInfos.add(timingInfo);
         });
+        return timingInfos;
     }
 
     private static void downloadURL(URL urlPath, File filenamePath)
