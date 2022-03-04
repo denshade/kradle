@@ -3,6 +3,8 @@ package info.thelaboflieven.kradle.jardependencies;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -72,4 +74,25 @@ class DependencyBuilderTest {
         commonJar.delete();
     }
 
+    @Test
+    void downloadSkipsExistingFile() throws IOException {
+        File jsonSimpleJar = new File(JSON_SIMPLE_JAR_FILE);
+        jsonSimpleJar.createNewFile();
+        JarDependencyFetcher.readLinesAndDownload(List.of(SIMPLE_JSON_URL + "," + jsonSimpleJar), new JarDependencyOptions().setOverwriteIfFileExist(false));
+        long bytesSimpleJar  = Files.size(jsonSimpleJar.toPath());
+        assertEquals(0, bytesSimpleJar);
+        jsonSimpleJar.delete();
+    }
+
+    @Test
+    void downloadOverwritesExistingFile() throws IOException {
+        File jsonSimpleJar = new File(JSON_SIMPLE_JAR_FILE);
+        jsonSimpleJar.createNewFile();
+        var details = JarDependencyFetcher.readLinesAndDownload(List.of(COMMONS_MATH3_URL + "," + jsonSimpleJar), new JarDependencyOptions().setOverwriteIfFileExist(true));
+        assertNotNull(details);
+
+        long bytesSimpleJar  = Files.size(jsonSimpleJar.toPath());
+        assertTrue(bytesSimpleJar > 0);
+        jsonSimpleJar.delete();
+    }
 }

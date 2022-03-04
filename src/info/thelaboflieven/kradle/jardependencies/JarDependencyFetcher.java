@@ -35,11 +35,7 @@ public class JarDependencyFetcher
     public static List<TimingInfo> readLinesAndDownload(List<String> urls, JarDependencyOptions options)  {
         List<TimingInfo> timingInfos = new ArrayList<>();
         Stream<String> lineStream;
-        if (options.isParallel()) {
-            lineStream = urls.stream();
-        } else {
-            lineStream = urls.parallelStream();
-        }
+        lineStream = parallelizeStreamIfOptionToggled(urls, options);
         lineStream.forEach((line) -> {
             var timingInfo = new TimingInfo();
             long start = System.currentTimeMillis();
@@ -47,7 +43,9 @@ public class JarDependencyFetcher
             try {
                 URL url = new URL(lineParts[0]);
                 File filename = new File(lineParts[1]);
-                downloadURL(url, filename);
+                if (!(filename.exists() && !options.isOverwriteIfFileExist())) {
+                    downloadURL(url, filename);
+                }
                 long end = System.currentTimeMillis();
                 timingInfo.timing = end - start;
                 timingInfo.url = url;
@@ -59,6 +57,16 @@ public class JarDependencyFetcher
             timingInfos.add(timingInfo);
         });
         return timingInfos;
+    }
+
+    private static Stream<String> parallelizeStreamIfOptionToggled(List<String> urls, JarDependencyOptions options) {
+        Stream<String> lineStream;
+        if (options.isParallel()) {
+            lineStream = urls.stream();
+        } else {
+            lineStream = urls.parallelStream();
+        }
+        return lineStream;
     }
 
     private static void downloadURL(URL urlPath, File filenamePath)
