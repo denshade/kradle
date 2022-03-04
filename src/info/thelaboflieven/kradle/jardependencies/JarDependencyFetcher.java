@@ -2,10 +2,7 @@ package info.thelaboflieven.kradle.jardependencies;
 
 import info.thelaboflieven.kradle.TimingInfo;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -51,7 +48,9 @@ public class JarDependencyFetcher
                 timingInfo.url = url;
                 timingInfo.filepath = filename;
                 timingInfo.status = "OK";
-            } catch (MalformedURLException e) {
+            } catch (FileNotFoundException fe) {
+                timingInfo.status = "File not found: " + fe.getMessage();
+            } catch (Exception e) {
                 timingInfo.status = e.getMessage();
             }
             timingInfos.add(timingInfo);
@@ -69,8 +68,7 @@ public class JarDependencyFetcher
         return lineStream;
     }
 
-    private static void downloadURL(URL urlPath, File filenamePath)
-    {
+    private static void downloadURL(URL urlPath, File filenamePath) throws IOException {
         System.out.println("Storing URL " + urlPath + " to " + filenamePath.getAbsolutePath());
         try (BufferedInputStream in = new BufferedInputStream(urlPath.openStream());
              FileOutputStream fileOutputStream = new FileOutputStream(filenamePath)) {
@@ -80,7 +78,7 @@ public class JarDependencyFetcher
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
             }
         } catch (IOException e) {
-            System.err.println(e);
+            throw e;
         }
     }
 }

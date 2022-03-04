@@ -15,9 +15,11 @@ class DependencyBuilderTest {
     private static final String COMMONS_MATH3_URL = "https://repo1.maven.org/maven2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar";
     private static final String SIMPLE_JSON_URL = "https://repo1.maven.org/maven2/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar";
     private static final String SIMPLE_BAD_JSON_URL = "repo1.maven.org/maven2/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar";
+    private static final String NOT_FOUND_JSON_URL = "https://repo1.maven.org/maven2/com/googlecode/json-simple/json-simple/1.1.1/json-simple--1.1.1.jar";
 
     private static final String JSON_SIMPLE_JAR_FILE = "json-simple.jar";
     private static final String COMMONS_JAR_FILE = "commons.jar";
+    private static final String FILE_NOT_FOUND = "FILE_NOT_FOUND";
 
     @Test
     void parallelDownloads()
@@ -55,7 +57,7 @@ class DependencyBuilderTest {
         assertNotNull(details);
         assertEquals(details.size(),2);
         assertEquals(details.get(0).status, "OK");
-
+        assertTrue(details.get(0).timing > 0 );
         jsonSimpleJar.delete();
         commonJar.delete();
     }
@@ -73,6 +75,17 @@ class DependencyBuilderTest {
         jsonSimpleJar.delete();
         commonJar.delete();
     }
+
+    @Test
+    void downloadInfoHasNotFoundURL() {
+        File commonJar = new File(FILE_NOT_FOUND);
+        var details = JarDependencyFetcher.readLinesAndDownload(List.of(NOT_FOUND_JSON_URL + "," + commonJar), new JarDependencyOptions().setParallel(false));
+        assertNotNull(details);
+        assertEquals(details.size(), 1);
+        assertEquals("File not found: https://repo1.maven.org/maven2/com/googlecode/json-simple/json-simple/1.1.1/json-simple--1.1.1.jar", details.get(0).status);
+
+    }
+
 
     @Test
     void downloadSkipsExistingFile() throws IOException {
