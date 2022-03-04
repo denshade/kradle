@@ -1,4 +1,4 @@
-package info.thelaboflieven.kradle;
+package info.thelaboflieven.kradle.jardependencies;
 
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +63,7 @@ class DependencyBuilderTest {
         File jsonSimpleJar = new File(JSON_SIMPLE_JAR_FILE);
         File commonJar = new File(COMMONS_JAR_FILE);
         var details = JarDependencyFetcher.readLinesAndDownload(List.of(COMMONS_MATH3_URL + "," + commonJar,
-                SIMPLE_BAD_JSON_URL + "," + jsonSimpleJar));
+                SIMPLE_BAD_JSON_URL + "," + jsonSimpleJar), new JarDependencyOptions().setParallel(false));
         assertNotNull(details);
         assertEquals(details.size(), 2);
         assertEquals(details.get(0).status, "no protocol: repo1.maven.org/maven2/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar");

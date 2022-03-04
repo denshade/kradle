@@ -1,4 +1,6 @@
-package info.thelaboflieven.kradle;
+package info.thelaboflieven.kradle.jardependencies;
+
+import info.thelaboflieven.kradle.TimingInfo;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -9,6 +11,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class JarDependencyFetcher
 {
@@ -26,9 +29,18 @@ public class JarDependencyFetcher
         readLinesAndDownload(Files.readAllLines(f.toPath()));
     }
 
-    public static List<TimingInfo> readLinesAndDownload(List<String> urls)  {
+    public static List<TimingInfo> readLinesAndDownload(List<String> urls) {
+        return readLinesAndDownload(urls, new JarDependencyOptions());
+    }
+    public static List<TimingInfo> readLinesAndDownload(List<String> urls, JarDependencyOptions options)  {
         List<TimingInfo> timingInfos = new ArrayList<>();
-        urls.parallelStream().forEach((line) -> {
+        Stream<String> lineStream;
+        if (options.isParallel()) {
+            lineStream = urls.stream();
+        } else {
+            lineStream = urls.parallelStream();
+        }
+        lineStream.forEach((line) -> {
             var timingInfo = new TimingInfo();
             long start = System.currentTimeMillis();
             String[] lineParts = line.split(",");
