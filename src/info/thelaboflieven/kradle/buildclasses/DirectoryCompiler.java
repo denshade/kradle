@@ -9,11 +9,14 @@ public class DirectoryCompiler
 {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        compile(new File("src"));
+        compile(new File("src"), new File("c:\\temp\\classes"));
     }
-    public static void compile(File source) throws IOException, InterruptedException {
+    public static void compile(File source, File classOutput) throws IOException, InterruptedException {
         List<String> commandLine = JavaSourceFileFinder.findJavaSources(source).stream().map(File::getAbsolutePath).collect(Collectors.toList());
         commandLine.add(0, "javac.exe");
+        commandLine.add("-d");
+        commandLine.add(classOutput.getAbsolutePath());
+
         Process p = Runtime.getRuntime().exec(commandLine.toArray(new String[0]), new String[0], new File("classes"));
         p.waitFor();
         BufferedReader stdError = new BufferedReader(new
