@@ -14,7 +14,7 @@ class DirectoryCompilerTest {
         String tmpdir = System.getProperty("java.io.tmpdir");
         File classes = new File(tmpdir+File.separator+"classes");
         classes.mkdirs();
-        DirectoryCompiler.compile(new File("src"), classes);
+        DirectoryCompiler.compile(new File("src"), classes, "javac.exe");
         var files = classes.listFiles();
         assertTrue(files.length > 0);
         classes.delete();

@@ -1,7 +1,6 @@
 package info.thelaboflieven.kradle.buildclasses;
 
 import java.io.*;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,13 +8,13 @@ public class DirectoryCompiler
 {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        compile(new File("src"), new File("c:\\temp\\classes"));
+        compile(new File("src"), new File("c:\\temp\\classes"), "javac.exe");
     }
-    public static void compile(File source, File classOutput) throws IOException, InterruptedException {
+    public static void compile(File source, File classOutputDirectory, String javacPath) throws IOException, InterruptedException {
         List<String> commandLine = JavaSourceFileFinder.findJavaSources(source).stream().map(File::getAbsolutePath).collect(Collectors.toList());
-        commandLine.add(0, "javac.exe");
+        commandLine.add(0, javacPath);
         commandLine.add("-d");
-        commandLine.add(classOutput.getAbsolutePath());
+        commandLine.add(classOutputDirectory.getAbsolutePath());
 
         Process p = Runtime.getRuntime().exec(commandLine.toArray(new String[0]), new String[0], new File("classes"));
         p.waitFor();
